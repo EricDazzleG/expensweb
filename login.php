@@ -66,9 +66,53 @@ function escape_html($str) {
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #1a1a1a 0%, #000000 50%, #1a1a1a 100%);
             padding: 1rem;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(
+                circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+                rgba(168, 85, 247, 0.08) 0%,
+                rgba(0, 0, 0, 0.97) 50%
+            );
+        }
+
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .background::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.8) 0%, rgba(0, 0, 0, 0.9) 100%);
+            pointer-events: none;
+        }
+
+        .glow {
+            position: absolute;
+            width: 40vmax;
+            height: 40vmax;
+            border-radius: 50%;
+            background: radial-gradient(
+                circle at center,
+                rgba(236, 72, 153, 0.12) 0%,
+                rgba(168, 85, 247, 0.08) 30%,
+                rgba(168, 85, 247, 0) 70%
+            );
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            transition: all 0.15s ease;
+            mix-blend-mode: screen;
         }
 
         .container {
@@ -80,6 +124,8 @@ function escape_html($str) {
             border-radius: 1rem;
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 1;
         }
 
         .header {
@@ -187,6 +233,10 @@ function escape_html($str) {
     </style>
 </head>
 <body>
+    <div class="background">
+        <div class="glow"></div>
+    </div>
+
     <div class="container">
         <div class="header">
             <h1>Welcome Back</h1>
@@ -228,5 +278,22 @@ function escape_html($str) {
             </svg>
         </a>
     </div>
+
+    <script>
+        // Add mouse tracking for reactive background
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth) * 100;
+            const y = (e.clientY / window.innerHeight) * 100;
+            
+            // Update the gradient position
+            document.body.style.setProperty('--mouse-x', `${x}%`);
+            document.body.style.setProperty('--mouse-y', `${y}%`);
+            
+            // Move the glow effect
+            const glow = document.querySelector('.glow');
+            glow.style.left = e.clientX + 'px';
+            glow.style.top = e.clientY + 'px';
+        });
+    </script>
 </body>
 </html>
